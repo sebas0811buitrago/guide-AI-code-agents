@@ -1,72 +1,70 @@
-# 🤖 AI Code Agents Guide
+# 🤖 Guía de Agentes de Código con IA
 
-A comprehensive guide for learning how to work effectively with AI code agents, covering prompt engineering fundamentals, architectural best practices, and practical workflow examples.
+Una guía completa para aprender a trabajar de manera eficaz con agentes de código de IA. Cubre desde los fundamentos de ingeniería de prompts hasta las mejores prácticas arquitectónicas, con ejemplos de flujos de trabajo prácticos.
 
-> 💡 **Pro Tip**: Start with prompt engineering basics, then explore architectural patterns, and finally implement practical workflows with Claude.
+> 💡 **Consejo Pro**: Comienza con los fundamentos de ingeniería de prompts, luego explora patrones arquitectónicos, y finalmente implementa flujos de trabajo prácticos con Claude.
 
-## 🎯 Prompt Engineering Fundamentals
+## 🎯 Fundamentos de Ingeniería de Prompts
 
-Master the art of communicating with AI code agents through effective prompting techniques:
+Aprende a comunicarte efectivamente con agentes de código de IA mediante técnicas avanzadas de prompting:
 
-1. **Interactive Tutorial** 📚 - Comprehensive guide with practical examples and step-by-step instructions for building optimal prompts: [Anthropic's Prompt Engineering Tutorial](https://github.com/anthropics/prompt-eng-interactive-tutorial)
+1. **Tutorial Interactivo** 📚 - Guía completa con ejemplos prácticos e instrucciones paso a paso para construir prompts óptimos: [Tutorial de Ingeniería de Prompts de Anthropic](https://github.com/anthropics/prompt-eng-interactive-tutorial)
 
-2. **Claude Coding Guide** 🎥 - Concise video guide for prompt engineering with Claude, similar to the GitHub course but more focused: [YouTube Tutorial](https://www.youtube.com/watch?v=ysPbXH0LpIE&t=1233s)
+2. **Guía de Codificación con Claude** 🎥 - Tutorial en video enfocado en ingeniería de prompts específicamente para Claude: [Tutorial de YouTube](https://www.youtube.com/watch?v=ysPbXH0LpIE&t=1233s)
 
-3. **DeepLearning.AI Course** 🎓 - Free comprehensive video course on ChatGPT prompt engineering fundamentals: [Prompt Engineering Course](https://learn.deeplearning.ai/courses/chatgpt-prompt-eng/lesson/dfbds/introduction)
+3. **Curso de DeepLearning.AI** 🎓 - Curso completo y gratuito sobre los fundamentos de ingeniería de prompts con ChatGPT: [Curso de Ingeniería de Prompts](https://learn.deeplearning.ai/courses/chatgpt-prompt-eng/lesson/dfbds/introduction)
 
-## 🏗️ Architecture Principles and Patterns
+## 🏗️ Principios y Patrones de Arquitectura
 
-To ensure code scalability and maintainability, it's crucial that your project has a well-defined and established architecture. I recommend combining clean architecture with vertical slicing/screaming architecture approaches:
+Para garantizar que tu código sea escalable y mantenible a largo plazo, es fundamental contar con una arquitectura sólida y bien definida. Te recomiendo combinar principios de arquitectura limpia con enfoques de división vertical y arquitectura expresiva:
 
-1. **Foundational Concepts** 🧱 - Learn essential principles like cohesion, coupling, stability, volatility, SOLID principles, and design patterns: [Patterns.dev](https://www.patterns.dev/)
+1. **Conceptos Fundamentales** 🧱 - Aprende principios esenciales como cohesión, acoplamiento, estabilidad, volatilidad, principios SOLID y patrones de diseño: [Patterns.dev](https://www.patterns.dev/)
 
-2. **Architecture Importance** 💡 - Understanding why good architecture matters for long-term project success: [Martin Fowler on Architecture](https://martinfowler.com/architecture/)
+2. **Importancia de la Arquitectura** 💡 - Comprende por qué una buena arquitectura es clave para el éxito a largo plazo de tu proyecto: [Martin Fowler sobre Arquitectura](https://martinfowler.com/architecture/)
 
-3. **Clean Architecture** ✨ - Principles for creating maintainable, testable, and independent code structures: [Clean Architecture Guide](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+3. **Arquitectura Limpia** ✨ - Principios para crear código mantenible, testeable e independiente: [Guía de Arquitectura Limpia](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html), [Ejemplo FastAPI con código limpio](https://github.com/ivan-borovets/fastapi-clean-example), [Evolving a Pragmatic, Clean Architecture - A Craftsman's Guide](https://www.classcentral.com/classroom/youtube-evolving-a-pragmatic-clean-architecture-a-craftsman-s-guide-by-victor-rentea-195702)
 
-4. **Ports and Adapters** 🔌 - Practical code examples implementing hexagonal architecture: [Port-Adapters Architecture Examples](https://github.com/sebas0811buitrago/port-adapters-architecture)
+4. **Puertos y Adaptadores** 🔌 - Ejemplos prácticos de implementación de arquitectura hexagonal: [Ejemplos de Arquitectura Puertos-Adaptadores](https://github.com/sebas0811buitrago/port-adapters-architecture)
 
-5. **Vertical Slicing** 📏 - Organizing code by features rather than technical layers: [Vertical Slice Architecture](https://www.milanjovanovic.tech/blog/vertical-slice-architecture)
+5. **División Vertical** 📏 - Organiza tu código por funcionalidades en lugar de por capas técnicas: [Arquitectura de División Vertical](https://www.milanjovanovic.tech/blog/vertical-slice-architecture)
 
-6. **Screaming Architecture** 📢 - Making your architecture intentions clear and obvious: [Screaming Architecture Guide](https://www.milanjovanovic.tech/blog/screaming-architecture)
+6. **Arquitectura Expresiva** 📢 - Haz que las intenciones de tu arquitectura sean claras y obvias: [Guía de Arquitectura Expresiva](https://www.milanjovanovic.tech/blog/screaming-architecture)
 
-7. **Modular Monoliths** 🏢 - Building maintainable monolithic applications with clear module boundaries: [Modular Monolith Architecture](https://www.milanjovanovic.tech/blog/what-is-a-modular-monolith)
+7. **Monolitos Modulares** 🏢 - Construye aplicaciones monolíticas mantenibles con límites de módulos bien definidos: [Arquitectura de Monolito Modular](https://www.milanjovanovic.tech/blog/what-is-a-modular-monolith)
 
-## 🚀 Practical Code Agent Workflows
+## 🚀 Flujos de Trabajo Prácticos con Agentes de Código
 
-Learn practical workflows and implementation patterns for working effectively with AI code agents, focusing on Claude:
+Domina flujos de trabajo prácticos y patrones de implementación para maximizar tu productividad trabajando con agentes de código de IA, especialmente Claude:
 
-### Claude-Specific Resources
+### Recursos Específicos de Claude
 
-1. **Official Claude Documentation** 📖 - Complete guide to Claude's coding capabilities, features, and best practices: [Claude Code Overview](https://docs.claude.com/en/docs/claude-code/overview)
+1. **Documentación Oficial de Claude** 📖 - Guía completa sobre las capacidades de programación, funcionalidades y mejores prácticas de Claude: [Visión General de Claude Code](https://docs.claude.com/en/docs/claude-code/overview)
 
-2. **Workflow Tutorial Video** 🎬 - Step-by-step demonstration of effective Claude coding workflows and techniques: [YouTube Tutorial](https://www.youtube.com/watch?v=NJ6sO_0BoTA)
+2. **Tutorial de Flujos de Trabajo** 🎬 - Demostración paso a paso de flujos de trabajo efectivos para programar con Claude: [Tutorial de YouTube](https://www.youtube.com/watch?v=NJ6sO_0BoTA)
 
-3. **Full-Stack Boilerplate** 🛠️ - Real-world example of a React + FastAPI project structure built with AI assistance: [React-FastAPI Boilerplate](https://github.com/gurusup/react-fastapi-boilerplate/tree/main)
+3. **Plantilla Full-Stack** 🛠️ - Ejemplo práctico de un proyecto React + FastAPI desarrollado con asistencia de IA: [Plantilla React-FastAPI](https://github.com/gurusup/react-fastapi-boilerplate/tree/main)
 
-## 💡 Best Practices for AI Code Collaboration
+## 💡 Mejores Prácticas para Colaboración con IA en Código
 
-### 📝 Effective Prompting Strategies
+### 📝 Estrategias Efectivas de Prompting
 
-- **Be specific and context-rich**: Provide clear requirements, constraints, and examples
-- **Break down complex tasks**: Divide large problems into smaller, manageable pieces
-- **Iterate and refine**: Use feedback loops to improve code quality progressively
-- **Specify coding standards**: Mention your preferred patterns, frameworks, and conventions
+- **Sé específico y contextual**: Proporciona requisitos claros, limitaciones y ejemplos concretos
+- **Divide tareas complejas**: Descompón problemas grandes en partes más pequeñas y manejables
+- **Itera y mejora**: Utiliza ciclos de retroalimentación para perfeccionar progresivamente la calidad del código
+- **Define estándares de código**: Especifica tus patrones, frameworks y convenciones preferidas
 
-### 🔧 Development Workflow Tips
+### 🔧 Consejos de Flujo de Trabajo de Desarrollo
 
-- **Start with architecture**: Plan your project structure before diving into implementation
-- **Use version control**: Make regular commits to track AI-assisted changes
-- **Review and test**: Always validate AI-generated code before deployment
-- **Document decisions**: Keep track of architectural choices and their reasoning
+- **Empieza por la arquitectura**: Planifica la estructura de tu proyecto antes de implementar
+- **Utiliza control de versiones**: Realiza commits frecuentes para hacer seguimiento a los cambios asistidos por IA
+- **Revisa y prueba siempre**: Valida todo el código generado por IA antes de desplegarlo
+- **Documenta las decisiones**: Mantén un registro de las decisiones arquitectónicas y su justificación
 
-### ⚡ Productivity Boosters
+### ⚡ Potenciadores de Productividad
 
-- **Template creation**: Build reusable project templates with AI assistance
-- **Code refactoring**: Leverage AI for systematic code improvements and modernization
-- **Learning acceleration**: Use AI to understand new technologies and patterns quickly
-- **Problem-solving**: Collaborate with AI to debug complex issues and find optimal solutions
+- **Creación de plantillas**: Desarrolla plantillas de proyecto reutilizables con ayuda de IA
+- **Refactorización de código**: Aprovecha la IA para mejoras sistemáticas y modernización del código
+- **Aprendizaje acelerado**: Utiliza IA para comprender nuevas tecnologías y patrones de forma rápida
+- **Resolución de problemas**: Colabora con IA para depurar issues complejos y encontrar soluciones óptimas
 
 ---
-
-_Happy coding with your AI assistant! 🚀_
