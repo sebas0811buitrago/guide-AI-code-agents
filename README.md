@@ -46,13 +46,13 @@ Domina flujos de trabajo prácticos y patrones de implementación para maximizar
 
 1. **Documentación Oficial de Claude** 📖 - Guía completa sobre las capacidades de programación, funcionalidades y mejores prácticas de Claude: [Visión General de Claude Code](https://docs.claude.com/en/docs/claude-code/overview)
 
-   - **🤖 Subagentes**: Asistentes de IA especializados para tareas específicas. Se configuran en `~/.claude/agents/` (usuario) o `.claude/agents/` (proyecto) usando archivos Markdown con YAML. [Documentación](https://docs.anthropic.com/en/docs/claude-code/settings)
+   - **🤖 Subagentes**: Asistentes de IA especializados para tareas específicas. [Documentación](https://docs.anthropic.com/en/docs/claude-code/settings)
 
-   - **🔌 MCPs**: Protocolo para integrar herramientas y APIs externas con Claude Code, ampliando sus capacidades con servicios especializados. [Documentación](https://docs.anthropic.com/en/docs/claude-code/mcp)
+   - **🔌 MCPs**: Protocolo para integrar herramientas externas con Claude Code, ampliando sus capacidades con servicios especializados. [Documentación](https://docs.anthropic.com/en/docs/claude-code/mcp)
 
    - **🪝 Hooks**: Comandos de shell que se ejecutan automáticamente en eventos específicos: `PreToolUse`, `PostToolUse`, `UserPromptSubmit`, `Notification`, `Stop`, `SubagentStop`. [Documentación](https://docs.claude.com/en/docs/claude-code/sub-agents)
 
-   - **⚡ Commands**: Scripts ejecutables activados con `/` para automatizar tareas. Uso básico: `claude` (interactivo) o `claude -p "consulta"` (única vez). [Documentación](https://docs.anthropic.com/en/docs/claude-code/cli-usage)
+   - **⚡ Commands**: Scripts ejecutables activados con `/` para automatizar tareas. [Documentación](https://docs.anthropic.com/en/docs/claude-code/cli-usage)
 
 2. **Tutorial de Flujos de Trabajo** 🎬 - Demostración paso a paso de flujos de trabajo efectivos para programar con Claude: [Tutorial de YouTube](https://www.youtube.com/watch?v=NJ6sO_0BoTA)
 
