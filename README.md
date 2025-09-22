@@ -50,7 +50,7 @@ Domina flujos de trabajo prácticos y patrones de implementación para maximizar
 
    - **🔌 MCPs**: Protocolo para integrar herramientas y APIs externas con Claude Code, ampliando sus capacidades con servicios especializados. [Documentación](https://docs.anthropic.com/en/docs/claude-code/mcp)
 
-   - **🪝 Hooks**: Comandos de shell que se ejecutan automáticamente en eventos específicos: `PreToolUse`, `PostToolUse`, `UserPromptSubmit`, `Notification`, `Stop`, `SubagentStop`. [Documentación](https://docs.anthropic.com/en/docs/claude-code/hooks)
+   - **🪝 Hooks**: Comandos de shell que se ejecutan automáticamente en eventos específicos: `PreToolUse`, `PostToolUse`, `UserPromptSubmit`, `Notification`, `Stop`, `SubagentStop`. [Documentación](https://docs.claude.com/en/docs/claude-code/sub-agents)
 
    - **⚡ Commands**: Scripts ejecutables activados con `/` para automatizar tareas. Uso básico: `claude` (interactivo) o `claude -p "consulta"` (única vez). [Documentación](https://docs.anthropic.com/en/docs/claude-code/cli-usage)
 
