@@ -14,6 +14,12 @@ Aprende a comunicarte efectivamente con agentes de código de IA mediante técni
 
 3. **Curso de DeepLearning.AI** 🎓 - Curso completo y gratuito sobre los fundamentos de ingeniería de prompts con ChatGPT: [Curso de Ingeniería de Prompts](https://learn.deeplearning.ai/courses/chatgpt-prompt-eng/lesson/dfbds/introduction)
 
+## 🔍 Ingeniería de Contexto
+
+La ingeniería de contexto es una técnica avanzada que optimiza cómo los agentes de IA comprenden y utilizan la información proporcionada. Aprende a estructurar y organizar el contexto para obtener resultados más precisos y coherentes:
+
+1. **Fundamentos de Ingeniería de Contexto** 🎥 - Técnicas para optimizar el contexto y mejorar la comprensión de los agentes de IA: [Tutorial de YouTube](https://www.youtube.com/watch?v=IdZDHX-Jlfs)
+
 ## 🏗️ Principios y Patrones de Arquitectura
 
 Para garantizar que tu código sea escalable y mantenible a largo plazo, es fundamental contar con una arquitectura sólida y bien definida. Te recomiendo combinar principios de arquitectura limpia con enfoques de división vertical y arquitectura expresiva:
@@ -39,6 +45,14 @@ Domina flujos de trabajo prácticos y patrones de implementación para maximizar
 ### Recursos Específicos de Claude
 
 1. **Documentación Oficial de Claude** 📖 - Guía completa sobre las capacidades de programación, funcionalidades y mejores prácticas de Claude: [Visión General de Claude Code](https://docs.claude.com/en/docs/claude-code/overview)
+
+   - **🤖 Subagentes**: Asistentes de IA especializados para tareas específicas. Se configuran en `~/.claude/agents/` (usuario) o `.claude/agents/` (proyecto) usando archivos Markdown con YAML. [Documentación](https://docs.anthropic.com/en/docs/claude-code/settings)
+
+   - **🔌 MCPs**: Protocolo para integrar herramientas y APIs externas con Claude Code, ampliando sus capacidades con servicios especializados. [Documentación](https://docs.anthropic.com/en/docs/claude-code/mcp)
+
+   - **🪝 Hooks**: Comandos de shell que se ejecutan automáticamente en eventos específicos: `PreToolUse`, `PostToolUse`, `UserPromptSubmit`, `Notification`, `Stop`, `SubagentStop`. [Documentación](https://docs.anthropic.com/en/docs/claude-code/hooks)
+
+   - **⚡ Commands**: Scripts ejecutables activados con `/` para automatizar tareas. Uso básico: `claude` (interactivo) o `claude -p "consulta"` (única vez). [Documentación](https://docs.anthropic.com/en/docs/claude-code/cli-usage)
 
 2. **Tutorial de Flujos de Trabajo** 🎬 - Demostración paso a paso de flujos de trabajo efectivos para programar con Claude: [Tutorial de YouTube](https://www.youtube.com/watch?v=NJ6sO_0BoTA)
 
