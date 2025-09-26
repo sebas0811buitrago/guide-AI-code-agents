@@ -42,6 +42,8 @@ Para garantizar que tu código sea escalable y mantenible a largo plazo, es fund
 
 Construye software confiable mediante estrategias de testing efectivas que maximicen la confianza mientras optimizan el tiempo de desarrollo:
 
+0. **Análisis Estático y Linters** 🔍 - La base fundamental de testing: herramientas de análisis estático que detectan errores sintácticos, de tipos y problemas de calidad de código antes de ejecutar cualquier test (TypeScript/ESLint/Prettier para JavaScript, mypy/pylint/black para Python, clippy/rustfmt para Rust, etc.)
+
 1. **Principios Fundamentales de Testing** ✅ - Aprende cuándo y cómo escribir tests efectivos siguiendo el principio "Write tests. Not too many. Mostly integration": [Write Tests](https://kentcdodds.com/blog/write-tests)
 
 2. **El Trofeo de Testing** 🏆 - Comprende las diferentes clasificaciones de tests y cómo optimizar tu estrategia de testing para obtener el mejor retorno de inversión: [The Testing Trophy and Testing Classifications](https://kentcdodds.com/blog/the-testing-trophy-and-testing-classifications)
@@ -73,6 +75,8 @@ Domina flujos de trabajo prácticos y patrones de implementación para maximizar
 2. **Tutorial de Flujos de Trabajo con Claude** 🎬 - Demostración paso a paso de flujos de trabajo efectivos para programar con Claude: [Tutorial de YouTube](https://www.youtube.com/watch?v=NJ6sO_0BoTA) | [Plantilla React-FastAPI](https://github.com/gurusup/react-fastapi-boilerplate/tree/main)
 
 3. **Guía Completa de Codificación con Claude** 🎥 - Tutorial avanzado de ingeniería de contexto y flujos de trabajo con Claude: [Tutorial de YouTube](https://www.youtube.com/watch?v=amEUIuBKwvg&t=1551s) | [Repositorio GitHub](https://github.com/coleam00/context-engineering-intro/tree/main/claude-code-full-guide)
+
+> 💡 **Consejo Pro**: Crea reglas y comandos reutilizables con tu agente de código. Una vez que hayas completado exitosamente una implementación después de iterar con tu agente de código (Claude, Cursor, etc.), puedes pedirle al agente que genere un prompt reutilizable basado en el historial de la conversación. Esto te permitirá reutilizar este patrón para tareas similares y evitar todo el proceso de iteración inicial, mejorando significativamente tu productividad.
 
 ## 💡 Mejores Prácticas para Colaboración con IA en Código
 
