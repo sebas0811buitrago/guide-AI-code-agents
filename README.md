@@ -24,6 +24,8 @@ La ingeniería de contexto es una técnica avanzada que optimiza cómo los agent
 
 3. **Estado de la Calidad del Código con IA 2025** 📊 - Reporte completo que demuestra cómo el contexto es la base de la confianza en código generado por IA, con datos de 609 desarrolladores, La intuición no escala, la estructura lo hace: [Reporte de Qodo](https://www.qodo.ai/reports/state-of-ai-code-quality/)
 
+4. **El Auge de la Ingeniería de Contexto** 📝 - Artículo definitivo de LangChain que define la ingeniería de contexto como la construcción de sistemas dinámicos para proporcionar la información y herramientas correctas en el formato adecuado: [Blog de LangChain](https://blog.langchain.com/the-rise-of-context-engineering/)
+
 ## 🏗️ Principios y Patrones de Arquitectura
 
 Para garantizar que tu código sea escalable y mantenible a largo plazo, es fundamental contar con una arquitectura sólida y bien definida. Te recomiendo combinar principios de arquitectura limpia con enfoques de división vertical y arquitectura expresiva:
