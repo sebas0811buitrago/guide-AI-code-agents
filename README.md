@@ -38,6 +38,18 @@ Para garantizar que tu código sea escalable y mantenible a largo plazo, es fund
 
 7. **Monolitos Modulares** 🏢 - Construye aplicaciones monolíticas mantenibles con límites de módulos bien definidos: [Arquitectura de Monolito Modular](https://www.milanjovanovic.tech/blog/what-is-a-modular-monolith)
 
+## 🧪 Estrategias de Testing
+
+Construye software confiable mediante estrategias de testing efectivas que maximicen la confianza mientras optimizan el tiempo de desarrollo:
+
+1. **Principios Fundamentales de Testing** ✅ - Aprende cuándo y cómo escribir tests efectivos siguiendo el principio "Write tests. Not too many. Mostly integration": [Write Tests](https://kentcdodds.com/blog/write-tests)
+
+2. **El Trofeo de Testing** 🏆 - Comprende las diferentes clasificaciones de tests y cómo optimizar tu estrategia de testing para obtener el mejor retorno de inversión: [The Testing Trophy and Testing Classifications](https://kentcdodds.com/blog/the-testing-trophy-and-testing-classifications)
+
+3. **La Regla de Oro de las Aserciones** 📏 - Domina el arte de escribir aserciones efectivas que proporcionen feedback claro y útil: [The Golden Rule of Assertions](https://www.epicweb.dev/the-golden-rule-of-assertions)
+
+4. **Qué Probar?** 🎯 - Guía práctica para determinar qué aspectos de tu código merecen ser testeados y cuáles no: [How to Know What to Test](https://kentcdodds.com/blog/how-to-know-what-to-test)
+
 ## 🚀 Flujos de Trabajo Prácticos con Agentes de Código
 
 Domina flujos de trabajo prácticos y patrones de implementación para maximizar tu productividad trabajando con agentes de código de IA:
