@@ -40,7 +40,11 @@ Para garantizar que tu código sea escalable y mantenible a largo plazo, es fund
 
 ## 🚀 Flujos de Trabajo Prácticos con Agentes de Código
 
-Domina flujos de trabajo prácticos y patrones de implementación para maximizar tu productividad trabajando con agentes de código de IA, especialmente Claude:
+Domina flujos de trabajo prácticos y patrones de implementación para maximizar tu productividad trabajando con agentes de código de IA:
+
+1. **Documentación Oficial Cursor** 📖 - Guía completa sobre las características y funcionalidades de Cursor, el editor de código con IA integrada: [Documentación de Cursor](https://cursor.com/en/docs)
+
+2. **Tutorial de Cursor** 🎥 - Guía práctica sobre cómo utilizar Cursor para programar de manera eficiente con IA: [Tutorial de YouTube](https://www.youtube.com/watch?v=mm8cn53_pdU&t=229s)
 
 ### Recursos Específicos de Claude
 
@@ -54,9 +58,9 @@ Domina flujos de trabajo prácticos y patrones de implementación para maximizar
 
    - **⚡ Commands**: Scripts ejecutables activados con `/` para automatizar tareas. [Documentación](https://docs.anthropic.com/en/docs/claude-code/cli-usage)
 
-2. **Tutorial de Flujos de Trabajo** 🎬 - Demostración paso a paso de flujos de trabajo efectivos para programar con Claude: [Tutorial de YouTube](https://www.youtube.com/watch?v=NJ6sO_0BoTA)
+2. **Tutorial de Flujos de Trabajo con Claude** 🎬 - Demostración paso a paso de flujos de trabajo efectivos para programar con Claude: [Tutorial de YouTube](https://www.youtube.com/watch?v=NJ6sO_0BoTA) | [Plantilla React-FastAPI](https://github.com/gurusup/react-fastapi-boilerplate/tree/main)
 
-3. **Plantilla Full-Stack** 🛠️ - Ejemplo práctico de un proyecto React + FastAPI desarrollado con asistencia de IA: [Plantilla React-FastAPI](https://github.com/gurusup/react-fastapi-boilerplate/tree/main)
+3. **Guía Completa de Codificación con Claude** 🎥 - Tutorial avanzado de ingeniería de contexto y flujos de trabajo con Claude: [Tutorial de YouTube](https://www.youtube.com/watch?v=amEUIuBKwvg&t=1551s) | [Repositorio GitHub](https://github.com/coleam00/context-engineering-intro/tree/main/claude-code-full-guide)
 
 ## 💡 Mejores Prácticas para Colaboración con IA en Código
 
