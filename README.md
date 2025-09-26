@@ -22,6 +22,8 @@ La ingeniería de contexto es una técnica avanzada que optimiza cómo los agent
 
 2. **Ingeniería de Contexto Avanzada** 🎥 - Técnicas avanzadas para estructurar y optimizar el contexto en agentes de código: [Tutorial de YouTube](https://www.youtube.com/watch?v=Mk87sFlUG28)
 
+3. **Estado de la Calidad del Código con IA 2025** 📊 - Reporte completo que demuestra cómo el contexto es la base de la confianza en código generado por IA, con datos de 609 desarrolladores, La intuición no escala, la estructura lo hace: [Reporte de Qodo](https://www.qodo.ai/reports/state-of-ai-code-quality/)
+
 ## 🏗️ Principios y Patrones de Arquitectura
 
 Para garantizar que tu código sea escalable y mantenible a largo plazo, es fundamental contar con una arquitectura sólida y bien definida. Te recomiendo combinar principios de arquitectura limpia con enfoques de división vertical y arquitectura expresiva:
