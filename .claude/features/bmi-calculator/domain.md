@@ -18,31 +18,19 @@ Create the whole module in the @/modules/bmi-calculator module :
 
 ## BMI Body measurements Entity
 
-```
-<bmi-body-measurements>
-  weight: number (required, min: 1, max: 1000)
-  height:  number (required, min: 30, max: 300
-</bmi-body-measurements>
-```
+<body-measurement-entity>
+  field : weight  (required, min value 1, max value 200) => the unit is in kg
+  field : height (required, min value 20, max 300) => the unit it is in cm
+</body-measurements-entity>
 
-```
-<bmi-calculation>
-  id: number (uuid)
-  weight: <bmi-body-measurements.weight/>
-  height:<bmi-body-measurements.height/>
-  bmi: number (required, decimal places: 1) => calculated BMI value
-  category: string (required, enum: ["Underweight", "Normal", "Overweight", "Obese"]) => BMI category classification
-  calculatedAt: Date (required) => timestamp when calculation was performed
+<bmi-record-entity>
+  id : (required)
+  field : weight  (required, min value 1, max value 200) => the unit is in kg
+  field : height (required, min value 20, max 300) => the unit it is in cm
+  field : bmi (required, min value 0)
+  ports: in the same entity file create ports for saving a bmi record, getting all bmi records, deleting all the records, and deleting one record by id.
 
-  ports: in the same entity file create ports for:
-  - creating new BMI calculations
-  - getting all BMI calculations from storage
+business logic: create a function with the logic to calculate the bmi, for the calculation take into account that the weight it is in kilograms and the height in centimeters
 
-  business logic: create a function to calculate BMI from weight and height (BMI = weight / (height/100)²)
-  business logic: create a function to determine BMI category based on BMI value:
-    - BMI < 18.5: "Underweight"
-    - BMI 18.5-24.9: "Normal"
-    - BMI 25-29.9: "Overweight"
-    - BMI ≥ 30: "Obese"
-</bmi-calculation-entity>
-```
+business logic: create a function that transforms the bmi to a category "under Weight", "normalWeight", "overWeight" or "obese"
+</body-measurements-entity>

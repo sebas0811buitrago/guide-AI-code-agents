@@ -1,48 +1,31 @@
 # BMI Calculator Test Scenarios
 
-@bmi-calculator-page.tsx
-
-# BMI Calculator Test Scenarios
-
-Act as a senior frontend developer and use the testing and architecture guides to build a comprehensive test suite for the BMI Calculator feature.
+Act as a senior frontend developer and use the testing and architecture guides to build a comprehensive test suite for the BMI calculator feature.
 
 ## Feature Summary
 
-The BMI Calculator allows users to input their weight (kg) and height (cm) to calculate their Body Mass Index (BMI) and automatically categorize the result. The feature consists of a form with weight and height inputs, a calculate button that computes the BMI using the formula (weight / (height/100)²), and displays the result with the appropriate category (Underweight, Normal, Overweight, Obese). Each calculation is automatically saved to localStorage and displayed in a history list on the right side of the screen. The history shows all previous calculations with BMI value, category, weight, height, and calculation date in reverse chronological order. Users can only view the history records - no editing or deletion is allowed. The form clears after each successful calculation and provides real-time validation feedback for invalid inputs.
+The BMI calculator allows users to calculate their BMI and save records over time. The feature consists of a form that captures weight and height information, calculates the BMI based on these inputs, and saves the result as a historical record. The saved records are displayed in a list showing weight, height, calculated BMI, and the associated weight category (underweight, normal, overweight, obese).
 
 ## Test Scenarios
 
-### Happy Path Tests
+- Should calculate BMI correctly when user enters valid weight and height
+- Should display "Normal Weight" category when BMI is between 18.5 and 24.9
+- Should display "Underweight" category when BMI is below 18.5
+- Should display "Overweight" category when BMI is between 25 and 29.9
+- Should display "Obese" category when BMI is 30 or above
+- Should display error message when user submits form with empty weight or height fields
+- Should display error message when user submits form with weight below 1 kg or above 200 kg
+- Should display error message when user submits form with height below 1 cm or above 200 cm
 
-- Should calculate BMI correctly when valid weight and height are entered
-- Should display correct BMI category based on calculated BMI value
-- Should save calculation to localStorage when Calculate BMI button is clicked
-- Should display new calculation in history list immediately after calculation
-- Should clear form fields after successful calculation
-- Should display all previous calculations in reverse chronological order
-- Should show BMI values formatted to 1 decimal place
-- Should display "No calculations yet" message when history is empty
-
-### Edge Cases
-
-- Should prevent form submission when weight field is empty
-- Should prevent form submission when height field is empty
-- Should show validation error for weight values below 1 kg
-- Should show validation error for weight values above 1000 kg
-- Should show validation error for height values below 30 cm
-- Should show validation error for height values above 300 cm
-- Should handle localStorage being unavailable gracefully
-- Should handle corrupted data in localStorage without crashing
-- Should display appropriate error message when BMI calculation fails
-- Should handle very precise decimal inputs correctly
+**Additional Notes:** Implement these tests as integration tests for the bmi-calculator.tsx component. Use metric units (weight in kg, height in cm).
 
 For building the tests, follow these phases:
 
 ## Phase 1: Feature and Rules Discovery
 
-1. Understand the module the user wants to test, and identify the different architecture layers outlined in the architecture guidelines cursor rules.
+1. Understand the module the user wants to test, and identify the different architecture layers outlined in the architecture guidelines cursor rules (`.cursor/rules/architecture.mdc`).
 
-2. Identify testing boundaries as outlined in the testing guidelines rule.
+2. Identify testing boundaries as outlined in the testing guidelines rule (`.cursor/rules/testing-guidelines.mdc`).
 
 3. Follow the rules and standards explained in the testing guidelines rule
 
