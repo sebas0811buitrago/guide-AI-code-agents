@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { DemoForm } from "@/components/demo-form";
 
 export default function Home() {
   return (
@@ -73,10 +72,6 @@ export default function Home() {
                 </code>
               </div>
             </div>
-          </div>
-
-          <div>
-            <DemoForm />
           </div>
         </div>
 
