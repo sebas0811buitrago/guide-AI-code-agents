@@ -3,8 +3,6 @@
 import {
   CreateBmiCalculationPort,
   BmiCalculation,
-  calculateBMI,
-  determineBMICategory,
 } from "../domain/bmi-calculation";
 import { ResultPattern } from "@/shared/domain/result-pattern";
 import { BmiCalculationStorageItem } from "./interfaces";
@@ -23,13 +21,12 @@ const transformToStorageItem = (
 
 export const createBmiCalculation: CreateBmiCalculationPort = async (
   weight: number,
-  height: number
+  height: number,
+  bmi: number,
+  category: BmiCalculation["category"]
 ): Promise<ResultPattern<BmiCalculation, string>> => {
   try {
-    // Create BMI calculation using business logic from domain
-    const bmi = calculateBMI(weight, height);
-    const category = determineBMICategory(bmi);
-
+    // Create BMI calculation with provided values
     const bmiCalculation: BmiCalculation = {
       id: crypto.randomUUID(),
       weight,

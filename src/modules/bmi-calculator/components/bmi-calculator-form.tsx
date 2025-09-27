@@ -24,7 +24,11 @@ import {
 } from "../domain/bmi-body-measurements";
 import { createBmiCalculation } from "../services/create-bmi-calculation";
 import { useState } from "react";
-import { BmiCalculation } from "../domain/bmi-calculation";
+import {
+  BmiCalculation,
+  calculateBMI,
+  determineBMICategory,
+} from "../domain/bmi-calculation";
 import { useGetBmiCalculations } from "../hooks/use-get-bmi-calculations";
 
 interface BmiCalculatorFormProps {
@@ -50,7 +54,16 @@ export const BmiCalculatorForm = ({
   });
 
   const onSubmit = async (values: BmiBodyMeasurements) => {
-    const result = await createBmiCalculation(values.weight, values.height);
+    // Calculate BMI and category in the component
+    const bmi = calculateBMI(values.weight, values.height);
+    const category = determineBMICategory(bmi);
+
+    const result = await createBmiCalculation(
+      values.weight,
+      values.height,
+      bmi,
+      category
+    );
 
     if (!result.success) {
       console.error("Failed to create BMI calculation:", result.error);

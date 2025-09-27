@@ -40,7 +40,9 @@ export const determineBMICategory = (
 // Ports
 export type CreateBmiCalculationPort = (
   weight: number,
-  height: number
+  height: number,
+  bmi: number,
+  category: BmiCalculation["category"]
 ) => Promise<ResultPattern<BmiCalculation, string>>;
 
 export type GetAllBmiCalculationsPort = () => Promise<

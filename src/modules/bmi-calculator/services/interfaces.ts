@@ -17,6 +17,8 @@ export interface BmiCalculationStorageItem {
 export interface CreateBmiCalculationRequest {
   weight: number;
   height: number;
+  bmi: number;
+  category: "Underweight" | "Normal" | "Overweight" | "Obese";
 }
 
 export interface LocalStorageService {
