@@ -1,0 +1,275 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+
+# General Project Architecture
+
+## 📖 Project Context
+
+This is demo app built in Next js for showcasing how to use clean architecture + vertical slicing in a react project.
+
+### 🧩 Main Technology Stack
+
+- **Framework**: Next.js 15.5.4 with App Router (NEVER Pages Router)
+- **Runtime**: React 19.1.1 + TypeScript 5
+- **Styles**: Tailwind CSS 4 with custom tokens
+- **Testing**: Vitest 3.2.4 with Testing Library
+- **Forms**: React Hook Form 7.63.0 + Zod 4.1.11
+- **Components**: Shadcn (Radix UI 2.1.7 + Lucide React 0.544.0)
+- **Fetching**: SWR 2.3.6 + ky 1.10.0
+
+# App Architecture Guidelines
+
+## Project Architecture Overview
+
+This project follows a feature-based folder structure with ports and adapters architecture adapted for frontend React applications. Each module is self-contained and independent.
+
+## Core Principles
+
+- **Module Independence** - No dependencies between modules
+- **App Folder Only** - Modules accessed only from the app folder
+- **Shared Code Access** - Shared code can be accessed from both app and modules
+- **Vertical Slicing** - Features are organized by business capability
+- **Ports and Adapters** - Business logic is independent (domain-specific logic, e.g., a bank app has restrictions in the registration flow where people younger than 18 years cannot create an account) of external dependencies (external services like API connections through endpoints, external SDKs, local storage, cookies, etc.)
+- **Domain Layer Isolation** - The domain layer cannot have dependencies from any other layer; for example, domain cannot import anything from services or components layers
+- **Layer Dependencies** - Components, hooks, and services layers can import anything freely from the domain layer. The goal is to make the domain layer totally independent.
+
+## Folder Structure
+
+The project should adhere to the following structure:
+
+```
+📁 project
+├── 📁 src
+│   ├── 📁 app # Modules are called and exposed through page URLs
+│   │   ├── <page-slug> # The structure of this folder depends on the framework
+│   │   └── ...
+│   ├── 📁 modules # All features are located here
+│   │   ├── 📁 <module-1>
+│   │   │   ├── 📁 components # React components of the module
+│   │   │   ├── 📁 hooks (optional) # Reusable or isolated logic for React components
+│   │   │   ├── 📁 domain # Entities and business logic
+│   │   │   │   ├── <Entity-1> # Any entity + ports + business logic + validations of the module
+│   │   │   │   ├── ... # Any entity of the module
+│   │   │   ├── 📁 services # Adapters that implement the ports
+│   │   │   ├── 📁 utils (optional) # Utility functions for the module
+│   │   │   ├── 📁 tests # Test suite for the whole module
+│   │   │   │   ├── 📁 mocks # Mocks for the test suite
+│   │   │   │   │   ├── <Mock>.test.ts # Mock data for the test suite
+│   │   │   │   │   └── <Module>.test.ts # Module tests
+│   │   │   │   └── ...
+│   │   ├── 📁 <module-2>
+│   │   │   └── ...
+│   └── 📁 shared
+│       ├── 📁 components # Design system components, reused throughout the app
+│       ├── 📁 hooks (optional) # Reusable or isolated logic for the whole app
+│       ├── 📁 domain # Reusable domain for the whole app (e.g., User)
+│       │   ├── <Entity-1> # Any entity + ports + business logic + validations of the module
+│       │   ├── ...
+│       ├── 📁 tests # Test suite for the whole app
+│       │   ├── 📁 mocks # Mocks present throughout the app
+│       │   │   ├── <Mock>.test.ts # Mock data for the test suite
+│       │   │   └── <Module>.test.ts # Module tests
+│       │   └── ...# Any entity of the module
+│       ├── 📁 services # Services used throughout the app (e.g., monitoring with Sentry, api calls)
+│       ├── 📁 utils (optional) # Utility functions used throughout the app (e.g., capitalizeWord)
+└── README.md
+```
+
+## Domain Layer Rules
+
+Each entity should have its own file `<entity.ts>`. Inside an entity file, consider the following:
+
+- Declare a Zod schema with validation (if provided, otherwise ignore validations) of its fields based on the user prompt criteria
+- Based on the Zod schema, infer the TypeScript interface
+- At the end of the file, create all the ports based on the user prompt. Search in the prompt for actions that will be connected with APIs or external services, if provided; otherwise, ignore this step
+- Add business logic here if necessary, for example, a business calculation: `const convertCOPtoUSD = (moneyCOP) => moneyCOP / USD_CONVERSION_RATE`
+
+### Example Entity
+
+````typescript
+import { z } from 'zod';
+
+export const bookSchema = z.object({
+  title: z.string(),
+  authors: z.array(z.string()).optional(),
+  description: z.string().optional()
+});
+
+export type Book = z.infer<typeof bookSchema>;
+
+export const searchSchema = z.string();
+
+export type SearchText = z.infer<typeof searchSchema>;
+
+export type GetBooksPort = (search: SearchText) => Promise<Book[]>;```
+
+````
+
+## Service Layer Rules
+
+Services handle external API connections, local storage, cookies, and other data input/output operations.
+
+###Creating a Service:
+
+### 0. Create an `endpoint.ts` in the service layer and save the endpoint(s) provided in an array likes this,for dynamic path params use curly brackets `{bookId}` (This only applies in case the service is an external api)
+
+never the endpoints listed here should start with `/`
+
+```typescript
+const endpoints = {
+  getBooks: "books/v1/volumes",
+  getBook: "books/v1/volumes/{bookId}",
+};
+
+export default endpoints;
+```
+
+#### 1.Define Types and Interfaces:
+
+- Create a response interface for the API or service response
+- Create a params interface combining query parameters and payload
+- Extract this information from the user prompt or API contract. If unavailable, mock the interfaces.
+
+#### 2. File organization and naming convention:
+
+- Each port gets its own file in the services layer
+- Naming pattern:
+  - Port: `GetBooksPort` → File: `get-books.ts`
+  - Adapter function: `getBooks`
+  - Service function: `getBooksService`
+- Use kebab-case for file names
+- Use PascalCase for ports names
+- Use camelCase for adapter names
+- Use camelCase for service function names
+
+#### 3. Service function creation:
+
+- The service function should call the endpoint directly
+- Return the API response without any modifications or transformations and cast the return type with the service response interface.
+- Default input params in the service function to query parameters unless user explicitly specifies body payload
+- Handle both query params and body payload as specified by the user
+- the params of the service function should always be passed through and object not though functions params
+
+```typescript
+const getLibraries  = ({
+    city
+} : {
+    city : string
+})=>{
+    ...code
+}
+```
+
+#### 4. Adapter Pattern Implementation:
+
+- Create an adapter that calls the service function
+- The adapter is the exported interface used by the application
+- Adapter must implement the corresponding port type
+- Transform the raw service response to match the adapter's return type
+- Map between the response interface and the port's expected return structure
+- Map between the port params and the expected service params
+
+```typescript
+import { GetBooksPort } from "../domain/books";
+import endpoints from "./endpoints";
+
+interface GetBooksGoogleAPIsResponse {
+  items: {
+    volumeInfo: {
+      title: string;
+      authors?: string[];
+      description?: string;
+    };
+  }[];
+}
+
+const getBooksGoogleService = async ({ query }: { query: string }) => {
+  const response = await fetch(
+    `${endpoints.getBooks}?q=${encodeURIComponent(query)}`
+  ).then((response) => response.json());
+
+  return response as GetBooksGoogleAPIsResponse;
+};
+
+export const getBook: GetBooksPort = async (search: string) => {
+  const response = await getBooksGoogleService({
+    query: search,
+  });
+
+  return response.items.map(
+    ({ volumeInfo: { title, authors, description } }) => ({
+      title,
+      authors,
+      description,
+    })
+  );
+};
+```
+
+#### 5. Error Handling with Result Pattern:
+
+- All exported service adapters should return a Result pattern to ensure consistent error handling across the app.
+- Use the following Result pattern type:
+
+```typescript
+import { ResultPattern } from "@/shared/domain/result-pattern";
+```
+
+- Wrap your adapter functions to return the Result pattern:
+
+```typescript
+import { GetBooksPort } from "../domain/books";
+import endpoints from "./endpoints";
+
+// Update the port to return Result pattern
+export type GetBooksPort = (
+  search: SearchText
+) => Promise<ResultPattern<Book[], string>>;
+
+// Service implementation with Result pattern
+export const getBooks: GetBooksPort = async (search: string) => {
+  try {
+    const response = await getBooksGoogleService({
+      query: search,
+    });
+
+    const books = response.items.map(
+      ({ volumeInfo: { title, authors, description } }) => ({
+        title,
+        authors,
+        description,
+      })
+    );
+
+    return { success: true, data: books };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+};
+```
+
+- Usage example in components/hooks:
+
+```typescript
+const handleSearch = async (searchTerm: string) => {
+  const result = await getBooks(searchTerm);
+
+  if (result.success) {
+    // Handle success case - TypeScript knows result.data is Book[]
+    setBooks(result.data);
+    setError(null);
+  } else {
+    // Handle error case - TypeScript knows result.error is string
+    setError(result.error);
+    setBooks([]);
+  }
+};
+```
+
+This ensures that all errors are handled in a standardized way throughout the application with full TypeScript type safety.

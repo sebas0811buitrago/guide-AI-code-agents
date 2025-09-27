@@ -1,0 +1,1297 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+
+# HealthNexus UI Testing Architecture Rule
+
+## 📖 Testing strategy
+
+The testing strategy for this project focuses on React testing best practices, emphasizing user behavior and integration testing while establishing clear boundaries defined by the ports and adapters architecture used in code basis.
+
+## 🏆 Testing Philosophy - The Testing Trophy
+
+It follows the Testing Trophy approach over the traditional testing pyramid, which consists of giving more importance to integration tests, since they run faster than E2E tests and cover cases closer to user behavior, providing more value than unit testing.
+
+- **Static Testing** (Foundation) - TypeScript + ESLint for catching basic errors
+- **Unit Testing** (Selective) - Only for complex business logic and utility functions
+- **Integration Testing** (Primary Investment) - Main focus, testing component interactions and user workflows
+- **E2E Testing** (Critical Paths) - E2E testing is out of scope for this project, as there is another team focused on that type of testing
+
+**Golden Rule**: "The more your tests resemble the way your software is used, the more confidence they can give you."
+
+**🎯 Query Selection Golden Rule: Always prefer `getByRole` over `getByText` when possible. This ensures your tests are accessibility-first and more resilient to text changes.**
+
+## 🎯 Testing Boundaries and Architecture Integration
+
+### Port-Adapter Testing Strategy
+
+**✅ ALWAYS TEST:**
+
+- **At the port level** - Test interfaces and contracts rather than individual adapters. This is achieved by mocking the actual service and adapter, effectively decoupling the application core from external services.
+- **User workflows** that span multiple architectural layers (components + hooks + domain)
+- **Complete feature interactions** from user action to expected outcome
+- **Domain business logic** indirectly through user interactions
+
+**❌ TRY TO AVOID UNLESS THERE IS A CRITICAL WORKFLOW OR COMPLEX LOGIC:**
+
+- Individual service adapters in isolation
+- Implementation details of components (state, private methods, CSS classes)
+- Internal data structures or how data flows between layers
+- Mock implementations unless verifying error scenarios
+
+### Testing Boundary Rules
+
+**🎯 Test at the Port Boundary - Mock Service Adapters Only**
+
+The testing boundary should be at the service adapter level (ports). This means:
+
+- ✅ **Mock service adapters** - These are the ports that connect to external systems
+- ❌ **Don't mock persistence layers** - localStorage, IndexedDB, etc. are never called when service adapters are mocked
+- ❌ **Don't mock data fetching libraries** - SWR, React Query, etc. are implementation details
+- ❌ **Don't mock domain logic** - Business rules should be tested through user interactions
+
+```typescript
+// ✅ CORRECT: Test at the port boundary - mock services, test everything else
+import * as registerPatient from '../services/register-patient';
+
+describe('PatientRegistration', () => {
+  it('Should register new patient when user submits valid form', async () => {
+    // Mock the external service (adapter) using spyOn
+    const registerPatientMock = vi.spyOn(registerPatient, 'default').mockResolvedValue(PATIENT_REGISTRATION_SUCCESS);
+
+    render(<PatientRegistration />);
+
+    // Test user interaction and complete workflow
+    await userEvent.type(screen.getByLabelText(/patient name/i), 'John Doe');
+    await userEvent.type(screen.getByLabelText(/birth date/i), '1990-01-01');
+    await userEvent.click(screen.getByRole('button', { name: /register/i }));
+
+    // Verify the port was called correctly (contract verification)
+    expect(registerPatientMock).toHaveBeenCalledWith({
+      name: 'John Doe',
+      birthDate: '1990-01-01'
+    } satisfies RegisterPatientParams);
+
+    // Verify user-visible outcome
+    expect(screen.getByText(/patient registered successfully/i)).toBeInTheDocument();
+  });
+});
+
+// ❌ INCORRECT: Testing service adapter in isolation
+describe('registerPatientService', () => {
+  it('should call API endpoint', () => {
+    // This tests implementation details, not user value
+  });
+});
+
+// ❌ INCORRECT: Mocking persistence layers unnecessarily
+describe('PatientRegistration', () => {
+  beforeEach(() => {
+    // DON'T DO THIS - localStorage is never called when service adapters are mocked
+    Object.defineProperty(window, 'localStorage', {
+      value: { getItem: vi.fn(), setItem: vi.fn() }
+    });
+  });
+});
+```
+
+## 📁 Test Organization and Structure
+
+### File Structure
+
+Follow the established architecture for each module:
+
+```
+📁 modules/<module-name>
+├── 📁 tests
+│   ├── 📁 mocks
+│   │   ├── services.ts        # Mock all service adapters (optional)
+│   │   ├── <Module>Mocks.ts   # Test data and utilities
+│   │   └── setup.ts           # Module-specific test setup (optional)
+│   └── <Component>.test.tsx   # Integration tests per component
+```
+
+### Test File Naming Convention
+
+- **Component tests**: `<ComponentName>.test.tsx`
+- **Mock files**: `<serviceName>Mock.ts` for services (only use when there are mock services that needs to be reused in different test, otherwise keep mocks at each test level), `<EntityName>Mocks.ts` for test data
+- **Utilities**: Use descriptive names like `AggridUtilities.ts`, `FormUtilities.ts`
+- - **Setup**: Only if test needs an special wrapper for rendering, like a toast, theme context, or any special beforeEach, afterEach configuration. Otherwise can be ignored.
+
+### Test Description Naming Convention
+
+**Format**: `Should [expected behavior] when [user action/condition]`
+
+**✅ CORRECT Examples:**
+
+```typescript
+describe('PatientRegistration', () => {
+  it('Should create patient successfully when user submits valid form', async () => {});
+
+  it('Should display validation errors when user submits form with missing required fields', async () => {});
+
+  it('Should show loading state when user submits the form', async () => {});
+
+  it('it should initialize the form when user clicks reset button', async () => {});
+
+  it('Should disable submit button when user has not made any changes', async () => {});
+
+  it('Should handle service errors gracefully when patient creation fails', async () => {});
+
+  it('Should update patient data correctly when user modifies existing patient', async () => {});
+
+  it('Should filter patient list when user types in search field', async () => {});
+
+  it('Should maintain selected patients when user applies and clears filters', async () => {});
+
+  it('Should show confirmation dialog when user attempts to delete multiple patients', async () => {});
+});
+```
+
+**❌ INCORRECT Examples:**
+
+```typescript
+// Bad: Testing implementation details
+it('Should call useState hook', async () => {});
+it('Should update component state', async () => {});
+
+// Bad: Vague or unclear intent
+it('Should work correctly', async () => {});
+it('Should handle click', async () => {});
+it('Should render', async () => {});
+
+// Bad: Technical jargon instead of user behavior
+it('Should invoke API endpoint', async () => {});
+it('Should trigger useEffect', async () => {});
+it('Should update Redux store', async () => {});
+```
+
+**Key Principles for Test Descriptions:**
+
+- **Start with "Should"** - Describes expected behavior
+- **Use user-centric language** - Focus on what users experience
+- **Be specific about conditions** - Clear about when the behavior occurs
+- **Describe outcomes, not mechanisms** - What happens, not how it happens
+- **Use domain language** - Terms your business stakeholders understand
+
+## 🔧 Testing Implementation Standards
+
+### Assertion Best Practices
+
+**🎯 Golden Rule: Each assertion should add unique value to the test.**
+
+```typescript
+// ❌ BAD - Redundant assertions
+expect(saveBmiRecordMock).toHaveBeenCalledWith({
+  weight: 75,
+  height: 170,
+  bmi: 26
+});
+expect(mockOnCalculate).toHaveBeenCalledWith(26); // ❌ Redundant - same info
+
+// ✅ GOOD - Single focused assertion
+expect(saveBmiRecordMock).toHaveBeenCalledWith({
+  weight: 75,
+  height: 170,
+  bmi: 26
+});
+```
+
+**Multiple assertions are OK when each tests a different aspect of behavior.**
+
+### Required Test Setup
+
+```typescript
+import { screen, act, render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+// Import service modules for spying
+import * as getPatients from '../services/get-patients';
+import * as updatePatient from '../services/update-patient';
+import * as deletePatient from '../services/delete-patient';
+
+import {
+  PATIENT_DATA_MOCK,
+  PATIENT_ID_MOCK,
+  createPatientUpdate
+} from './mocks/PatientMocks';
+
+// If your Vitest config sets `restoreMocks: true`, you do NOT need to manually call `vi.restoreAllMocks()` or `vi.resetAllMocks()` in your test setup hooks. Vitest will handle this automatically between tests.
+
+beforeEach(() => {
+  // Only add custom setup here if needed; avoid redundant mock restores.
+});
+```
+
+### Service Mocking Rules
+
+**1. Import service modules directly:**
+
+```typescript
+// Import service modules for spying
+import * as getPatients from '../services/get-patients';
+import * as updatePatient from '../services/update-patient';
+import * as deletePatient from '../services/delete-patient';
+```
+
+**2. Create spies within each test:**
+
+```typescript
+it('Should update patient when user modifies data', async () => {
+  const getPatientsMock = vi.spyOn(getPatients, 'default').mockResolvedValue(PATIENT_DATA_MOCK);
+  const updatePatientMock = vi.spyOn(updatePatient, 'default').mockResolvedValue({ success: true });
+
+  render(<PatientManagement />);
+
+  // Test implementation...
+});
+```
+
+```typescript
+// mocks/PatientMocks.ts
+import { Patient, UpdatePatientParams } from '../domain/Patient';
+
+export const PATIENT_ID_MOCK = 'patient-123';
+export const PATIENT_DATA_MOCK: Patient[] = [
+  {
+    id: 'patient-1',
+    name: 'John Doe',
+    birthDate: '1990-01-01',
+    status: 'active'
+  },
+  {
+    id: 'patient-2',
+    name: 'Jane Smith',
+    birthDate: '1985-05-15',
+    status: 'inactive'
+  }
+];
+```
+
+### User Interaction Patterns
+
+**✅ CORRECT: Test user behavior, not implementation:**
+
+```typescript
+// Focus on user workflows and expected outcomes
+it('Should update patient status when user selects patients and clicks update', async () => {
+  const getPatientsMock = vi.spyOn(getPatients, 'default').mockResolvedValue(PATIENT_DATA_MOCK);
+  const updatePatientMock = vi.spyOn(updatePatient, 'default').mockResolvedValue({ success: true });
+
+  render(<PatientManagement />);
+
+  // Wait for data to load (integration behavior)
+  await waitForPatientsToLoad();
+
+  // User selects patients
+  await selectPatientsByIds(['patient-1', 'patient-2']);
+
+  // User performs action
+  await userEvent.click(screen.getByRole('button', { name: /update status/i }));
+
+  // Verify the port contract
+  expect(updatePatientMock).toHaveBeenCalledWith(
+    createPatientUpdate(PATIENT_DATA_MOCK, ['patient-1', 'patient-2'])
+  );
+
+  // Verify user sees the result
+  expect(screen.getByText(/patients updated successfully/i)).toBeInTheDocument();
+});
+```
+
+### Query Priority and Element Selection
+
+**Use React Testing Library query hierarchy:**
+
+1. **Semantic queries** (preferred):
+
+   ```typescript
+   screen.getByRole('button', { name: /save/i });
+   screen.getByLabelText(/patient name/i);
+   screen.getByText(/register patient/i);
+   ```
+
+2. **Accessibility queries**:
+
+   ```typescript
+   screen.getByAltText(/patient photo/i);
+   screen.getByTitle(/help information/i);
+   ```
+
+3. **Test IDs** (last resort only):
+   ```typescript
+   screen.getByTestId('patient-form-submit'); // Only when semantic queries aren't possible
+   ```
+
+### Visibility Assertions: .toBeVisible() vs .toBeInTheDocument()
+
+**Use `.toBeVisible()` for element presence - it's accessibility-first and checks that elements are truly visible and interactive to users:**
+
+```typescript
+// ✅ GOOD - Check element is present and accessible
+expect(screen.getByText(/success message/i)).toBeVisible();
+expect(screen.getByRole('button', { name: /submit/i })).toBeVisible();
+```
+
+**Use `.toBeInTheDocument()` only for element absence - it's faster for negative assertions:**
+
+```typescript
+// ✅ GOOD - Check element is absent
+expect(screen.queryByText(/error message/i)).not.toBeInTheDocument();
+expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+```
+
+**❌ Avoid using `.toBeInTheDocument()` for presence assertions - it doesn't verify accessibility:**
+
+```typescript
+// ❌ BAD - Doesn't check if element is actually visible to users
+expect(screen.getByText(/success message/i)).toBeInTheDocument();
+```
+
+### Error Handling and Edge Cases
+
+**Test error scenarios as users experience them:**
+
+```typescript
+it('Should display error message when patient registration fails', async () => {
+  const errorMessage = 'Patient already exists';
+  const registerPatientMock = vi.spyOn(registerPatient, 'default')
+    .mockRejectedValue(new ErrorService(errorMessage, ERROR_409));
+
+  render(<PatientRegistration />);
+
+  await userEvent.type(screen.getByLabelText(/patient name/i), 'John Doe');
+  await userEvent.click(screen.getByRole('button', { name: /register/i }));
+
+  // Verify user sees the error
+  expect(screen.getByText(errorMessage)).toBeInTheDocument();
+
+  // Verify form remains in editable state for retry
+  expect(screen.getByLabelText(/patient name/i)).toBeEnabled();
+});
+
+it('Should handle network errors gracefully', async () => {
+  const getPatientsMock = vi.spyOn(getPatients, 'default')
+    .mockRejectedValue(new ErrorService('Network Error', ERROR_500));
+
+  render(<PatientList />);
+
+  expect(screen.getByText(/something went wrong/i)).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
+});
+```
+
+## 🎭 Advanced Testing Patterns
+
+### Testing Form Workflows
+
+```typescript
+it('Should validate form fields and prevent submission when the user submit the form with invalid data ', async () => {
+  const registerPatientMock = vi.spyOn(registerPatient, 'default');
+
+  render(<PatientRegistration />);
+
+  // Submit empty form
+  await userEvent.click(screen.getByRole('button', { name: /register/i }));
+
+  // Verify validation messages appear
+  expect(screen.getByText(/patient name is required/i)).toBeInTheDocument();
+  expect(screen.getByText(/birth date is required/i)).toBeInTheDocument();
+
+  // Verify service was not called
+  expect(registerPatientMock).not.toHaveBeenCalled();
+});
+```
+
+### Testing Complex UI Interactions
+
+```typescript
+it('Should maintain selection state when user filters the patients list', async () => {
+  const getPatientsMock = vi.spyOn(getPatients, 'default').mockResolvedValue(PATIENT_DATA_MOCK);
+
+  render(<PatientManagement />);
+
+  await waitForPatientsToLoad();
+
+  // Select initial patients
+  await selectPatientsByIds(['patient-1']);
+  await expectPatientsToBeSelected(['patient-1']);
+
+  // Apply filter
+  await userEvent.type(screen.getByRole('textbox', { name: /filter/i }), 'Jane');
+
+  // Verify filtered results
+  expect(screen.getByText('Jane Smith')).toBeInTheDocument();
+  expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
+
+  // Clear filter and verify selection persists
+  await userEvent.click(screen.getByRole('button', { name: /clear filter/i }));
+  await expectPatientsToBeSelected(['patient-1']);
+});
+```
+
+### Testing State Management and Persistence
+
+```typescript
+it('Should reset form to initial state when user clicks reset', async () => {
+  const getPatientMock = vi.spyOn(getPatient, 'default').mockResolvedValue(PATIENT_DATA_MOCK[0]);
+  const updatePatientMock = vi.spyOn(updatePatient, 'default');
+
+  render(<PatientForm patientId={PATIENT_ID_MOCK} />);
+
+  await waitForPatientToLoad();
+
+  // Modify form data
+  await userEvent.clear(screen.getByLabelText(/patient name/i));
+  await userEvent.type(screen.getByLabelText(/patient name/i), 'Modified Name');
+
+  // Reset form
+  await userEvent.click(screen.getByRole('button', { name: /reset/i }));
+
+  // Verify form reverted to original values
+  expect(screen.getByDisplayValue('John Doe')).toBeInTheDocument();
+
+  // Verify reset button is disabled (no changes)
+  expect(screen.getByRole('button', { name: /reset/i })).toBeDisabled();
+});
+```
+
+## 🚨 Testing Anti-Patterns to Avoid
+
+### ❌ Don't Test Implementation Details
+
+```typescript
+// BAD: Testing internal state
+expect(wrapper.state('loading')).toBe(true);
+expect(component.find('.patient-card')).toHaveLength(2);
+
+// BAD: Testing internal methods
+expect(component.instance().handlePatientSelect).toHaveBeenCalled();
+
+// BAD: Testing CSS classes instead of functionality
+expect(wrapper.find('.error-message')).toExist();
+```
+
+### ❌ Don't Mock Internal Application Logic
+
+```typescript
+// BAD: Mocking internal hooks or components
+vi.mock('../hooks/usePatients');
+vi.mock('../components/PatientCard');
+
+// BAD: Mocking domain logic
+vi.mock('../domain/Patient');
+
+// BAD: Mocking data fetching libraries (SWR, React Query, etc.)
+vi.mock('swr', () => ({ mutate: vi.fn() }));
+vi.mock('@tanstack/react-query');
+vi.mock('react-query');
+```
+
+**🚫 Never Mock Data Fetching Libraries:**
+
+Data fetching libraries like SWR, React Query, or Apollo Client are implementation details. Mocking them tests HOW the component fetches data, not WHAT the user experiences.
+
+```typescript
+// ❌ BAD - Testing implementation details
+vi.mock('swr', () => ({ mutate: vi.fn() }));
+const mutateMock = vi.mocked(mutate);
+expect(mutateMock).toHaveBeenCalledWith('cache-key');
+
+// ✅ GOOD - Testing user behavior and business outcomes
+const saveBmiRecordMock = vi
+  .spyOn(saveBmiRecord, 'default')
+  .mockResolvedValue(BMI_RECORD_MOCK);
+expect(saveBmiRecordMock).toHaveBeenCalledWith({
+  weight: 75,
+  height: 170,
+  bmi: 26
+});
+expect(mockOnCalculate).toHaveBeenCalledWith(26);
+```
+
+**Why This Matters:**
+
+- Tests remain stable when switching between data fetching libraries
+- Focus on user outcomes, not internal mechanisms
+- True integration testing with real data fetching behavior
+- Better test maintainability and reliability
+
+**🚫 Never Mock Persistence Layers:**
+
+Persistence layers like localStorage, IndexedDB, or other storage mechanisms are implementation details that should not be mocked when testing at the port boundary. Since we mock service adapters (ports), the persistence layer is never called during tests.
+
+```typescript
+// ❌ BAD - Mocking persistence layers unnecessarily
+Object.defineProperty(window, 'localStorage', {
+  value: {
+    getItem: vi.fn(),
+    setItem: vi.fn(),
+    removeItem: vi.fn()
+  }
+});
+
+// ✅ GOOD - Mock only at the port boundary
+const saveBmiRecordMock = vi
+  .spyOn(saveBmiRecord, 'saveBmiRecord')
+  .mockResolvedValue(BMI_RECORD_MOCK);
+// localStorage methods are never called because we mock the service adapter
+```
+
+**Why This Matters:**
+
+- Service adapters abstract away the persistence implementation
+- Tests focus on business logic, not storage mechanisms
+- Persistence layers are tested through service adapter integration
+- Cleaner tests with fewer unnecessary mocks
+- Tests remain stable when switching storage implementations
+
+### ❌ Don't Test Too Many Things in One Test
+
+```typescript
+// BAD: Testing multiple unrelated behaviors
+it('Should handle all patient operations', async () => {
+  // Tests create, update, delete, filter, sort all in one test
+  // Makes debugging difficult and creates brittle tests
+});
+```
+
+## 📊 Test Utilities and Helpers
+
+### Create Reusable Test Utilities
+
+```typescript
+// src/test/PatientUtilities.ts
+export const waitForPatientsToLoad = () =>
+  waitFor(() => expect(screen.queryByText(/loading/i)).not.toBeInTheDocument());
+
+export const selectPatientsByIds = async (ids: string[]) => {
+  for (const id of ids) {
+    await userEvent.click(screen.getByTestId(`patient-checkbox-${id}`));
+  }
+};
+
+export const expectPatientsToBeSelected = async (ids: string[]) => {
+  await waitFor(() => {
+    ids.forEach((id) => {
+      expect(screen.getByTestId(`patient-checkbox-${id}`)).toBeChecked();
+    });
+  });
+};
+```
+
+**Use a shared render utility (e.g., `renderWithAppContext`) for rendering components with required providers (such as SWR or context providers). Place this utility in a common location (like `src/shared/test/setup.ts`) for reuse across tests.**
+
+### Required Test Setup
+
+```typescript
+import { screen, act, render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+// Import service modules for spying
+import * as getPatients from '../services/get-patients';
+import * as updatePatient from '../services/update-patient';
+import * as deletePatient from '../services/delete-patient';
+
+import {
+  PATIENT_DATA_MOCK,
+  PATIENT_ID_MOCK,
+  createPatientUpdate
+} from './mocks/PatientMocks';
+
+// If your Vitest config sets `restoreMocks: true`, you do NOT need to manually call `vi.restoreAllMocks()` or `vi.resetAllMocks()` in your test setup hooks. Vitest will handle this automatically between tests.
+
+beforeEach(() => {
+  // Only add custom setup here if needed; avoid redundant mock restores.
+});
+```
+
+## 🎯 Test Coverage Strategy
+
+### Focus on Business Value
+
+**High Priority (Full Coverage):**
+
+- Feature happy path
+- Critical business calculations
+
+**Medium Priority (Integration + Edge Cases):**
+
+- Search and filtering functionality
+- Form validation and user feedback
+- Data export and reporting features
+
+**Low Priority (Selective Testing):**
+
+- UI styling and layout components
+- Non-critical user preferences
+- Cosmetic features with low business impact
+
+### Coverage Metrics Guidelines
+
+- **Target 80%+ line coverage** but prioritize meaningful tests over coverage percentage
+- **Focus on path coverage** for critical business logic
+- **Ensure error path coverage** for all user-facing error scenarios
+- **Avoid coverage theater** - tests that increase numbers without adding confidence
+
+### Continuous Integration Considerations
+
+- **Tests must be deterministic** - no flaky tests due to timing or randomness
+- **Tests should be independent** - able to run in any order
+- **Use appropriate timeouts** for async operations
+- **Mock external dependencies** to avoid network calls in CI
+
+### Test Maintenance
+
+- **Update tests when requirements change**, not when implementation changes
+- **Remove obsolete tests** that no longer provide value
+- **Refactor test code** with the same care as production code
+
+Remember: **"Write tests. Not too many. Mostly integration."** Focus on tests that provide genuine confidence in user-facing functionality while remaining maintainable and resistant to unnecessary churn during refactoring.
+
+# HealthNexus UI Testing Architecture Rule
+
+## 📖 Testing strategy
+
+The testing strategy for this project focuses on React testing best practices, emphasizing user behavior and integration testing while establishing clear boundaries defined by the ports and adapters architecture used in code basis.
+
+## 🏆 Testing Philosophy - The Testing Trophy
+
+It follows the Testing Trophy approach over the traditional testing pyramid, which consists of giving more importance to integration tests, since they run faster than E2E tests and cover cases closer to user behavior, providing more value than unit testing.
+
+- **Static Testing** (Foundation) - TypeScript + ESLint for catching basic errors
+- **Unit Testing** (Selective) - Only for complex business logic and utility functions
+- **Integration Testing** (Primary Investment) - Main focus, testing component interactions and user workflows
+- **E2E Testing** (Critical Paths) - E2E testing is out of scope for this project, as there is another team focused on that type of testing
+
+**Golden Rule**: "The more your tests resemble the way your software is used, the more confidence they can give you."
+
+## 🎯 Testing Boundaries and Architecture Integration
+
+### Port-Adapter Testing Strategy
+
+**✅ ALWAYS TEST:**
+
+- **At the port level** - Test interfaces and contracts rather than individual adapters. This is achieved by mocking the actual service and adapter, effectively decoupling the application core from external services.
+- **User workflows** that span multiple architectural layers (components + hooks + domain)
+- **Complete feature interactions** from user action to expected outcome
+- **Domain business logic** indirectly through user interactions
+
+**❌ TRY TO AVOID UNLESS THERE IS A CRITICAL WORKFLOW OR COMPLEX LOGIC:**
+
+- Individual service adapters in isolation
+- Implementation details of components (state, private methods, CSS classes)
+- Internal data structures or how data flows between layers
+- Mock implementations unless verifying error scenarios
+
+### Testing Boundary Rules
+
+**🎯 Test at the Port Boundary - Mock Service Adapters Only**
+
+The testing boundary should be at the service adapter level (ports). This means:
+
+- ✅ **Mock service adapters** - These are the ports that connect to external systems
+- ❌ **Don't mock persistence layers** - localStorage, IndexedDB, etc. are never called when service adapters are mocked
+- ❌ **Don't mock data fetching libraries** - SWR, React Query, etc. are implementation details
+- ❌ **Don't mock domain logic** - Business rules should be tested through user interactions
+
+```typescript
+// ✅ CORRECT: Test at the port boundary - mock services, test everything else
+import * as registerPatient from '../services/register-patient';
+
+describe('PatientRegistration', () => {
+  it('Should register new patient when user submits valid form', async () => {
+    // Mock the external service (adapter) using spyOn
+    const registerPatientMock = vi.spyOn(registerPatient, 'default').mockResolvedValue(PATIENT_REGISTRATION_SUCCESS);
+
+    render(<PatientRegistration />);
+
+    // Test user interaction and complete workflow
+    await userEvent.type(screen.getByLabelText(/patient name/i), 'John Doe');
+    await userEvent.type(screen.getByLabelText(/birth date/i), '1990-01-01');
+    await userEvent.click(screen.getByRole('button', { name: /register/i }));
+
+    // Verify the port was called correctly (contract verification)
+    expect(registerPatientMock).toHaveBeenCalledWith({
+      name: 'John Doe',
+      birthDate: '1990-01-01'
+    } satisfies RegisterPatientParams);
+
+    // Verify user-visible outcome
+    expect(screen.getByText(/patient registered successfully/i)).toBeInTheDocument();
+  });
+});
+
+// ❌ INCORRECT: Testing service adapter in isolation
+describe('registerPatientService', () => {
+  it('should call API endpoint', () => {
+    // This tests implementation details, not user value
+  });
+});
+
+// ❌ INCORRECT: Mocking persistence layers unnecessarily
+describe('PatientRegistration', () => {
+  beforeEach(() => {
+    // DON'T DO THIS - localStorage is never called when service adapters are mocked
+    Object.defineProperty(window, 'localStorage', {
+      value: { getItem: vi.fn(), setItem: vi.fn() }
+    });
+  });
+});
+```
+
+## 📁 Test Organization and Structure
+
+### File Structure
+
+Follow the established architecture for each module:
+
+```
+📁 modules/<module-name>
+├── 📁 tests
+│   ├── 📁 mocks
+│   │   ├── services.ts        # Mock all service adapters (optional)
+│   │   ├── <Module>Mocks.ts   # Test data and utilities
+│   │   └── setup.ts           # Module-specific test setup (optional)
+│   └── <Component>.test.tsx   # Integration tests per component
+```
+
+### Test File Naming Convention
+
+- **Component tests**: `<ComponentName>.test.tsx`
+- **Mock files**: `<serviceName>Mock.ts` for services (only use when there are mock services that needs to be reused in different test, otherwise keep mocks at each test level), `<EntityName>Mocks.ts` for test data
+- **Utilities**: Use descriptive names like `AggridUtilities.ts`, `FormUtilities.ts`
+- - **Setup**: Only if test needs an special wrapper for rendering, like a toast, theme context, or any special beforeEach, afterEach configuration. Otherwise can be ignored.
+
+### Test Description Naming Convention
+
+**Format**: `Should [expected behavior] when [user action/condition]`
+
+**✅ CORRECT Examples:**
+
+```typescript
+describe('PatientRegistration', () => {
+  it('Should create patient successfully when user submits valid form', async () => {});
+
+  it('Should display validation errors when user submits form with missing required fields', async () => {});
+
+  it('Should show loading state when after user submits the form', async () => {});
+
+  it('Should reset form to initial values when user clicks reset button', async () => {});
+
+  it('Should disable submit button when user has not made any changes', async () => {});
+
+  it('Should handle service errors gracefully when patient creation fails', async () => {});
+
+  it('Should update patient data correctly when user modifies existing patient', async () => {});
+
+  it('Should filter patient list when user types in search field', async () => {});
+
+  it('Should maintain selected patients when user applies and clears filters', async () => {});
+
+  it('Should show confirmation dialog when user attempts to delete multiple patients', async () => {});
+});
+```
+
+**❌ INCORRECT Examples:**
+
+```typescript
+// Bad: Testing implementation details
+it('Should call useState hook', async () => {});
+it('Should update component state', async () => {});
+
+// Bad: Vague or unclear intent
+it('Should work correctly', async () => {});
+it('Should handle click', async () => {});
+it('Should render', async () => {});
+
+// Bad: Technical jargon instead of user behavior
+it('Should invoke API endpoint', async () => {});
+it('Should trigger useEffect', async () => {});
+it('Should update Redux store', async () => {});
+```
+
+**Key Principles for Test Descriptions:**
+
+- **Start with "Should"** - Describes expected behavior
+- **Use user-centric language** - Focus on what users experience
+- **Be specific about conditions** - Clear about when the behavior occurs
+- **Describe outcomes, not mechanisms** - What happens, not how it happens
+- **Use domain language** - Terms your business stakeholders understand
+
+## 🔧 Testing Implementation Standards
+
+### Assertion Best Practices
+
+**🎯 Golden Rule: Each assertion should add unique value to the test.**
+
+```typescript
+// ❌ BAD - Redundant assertions
+expect(saveBmiRecordMock).toHaveBeenCalledWith({
+  weight: 75,
+  height: 170,
+  bmi: 26
+});
+expect(mockOnCalculate).toHaveBeenCalledWith(26); // ❌ Redundant - same info
+
+// ✅ GOOD - Single focused assertion
+expect(saveBmiRecordMock).toHaveBeenCalledWith({
+  weight: 75,
+  height: 170,
+  bmi: 26
+});
+```
+
+**Multiple assertions are OK when each tests a different aspect of behavior.**
+
+### Required Test Setup
+
+```typescript
+import { screen, act, render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+// Import service modules for spying
+import * as getPatients from '../services/get-patients';
+import * as updatePatient from '../services/update-patient';
+import * as deletePatient from '../services/delete-patient';
+
+import {
+  PATIENT_DATA_MOCK,
+  PATIENT_ID_MOCK,
+  createPatientUpdate
+} from './mocks/PatientMocks';
+
+// If your Vitest config sets `restoreMocks: true`, you do NOT need to manually call `vi.restoreAllMocks()` or `vi.resetAllMocks()` in your test setup hooks. Vitest will handle this automatically between tests.
+
+beforeEach(() => {
+  // Only add custom setup here if needed; avoid redundant mock restores.
+});
+```
+
+### Service Mocking Rules
+
+**1. Import service modules directly:**
+
+```typescript
+// Import service modules for spying
+import * as getPatients from '../services/get-patients';
+import * as updatePatient from '../services/update-patient';
+import * as deletePatient from '../services/delete-patient';
+```
+
+**2. Create spies within each test:**
+
+```typescript
+it('Should update patient when user modifies data', async () => {
+  const getPatientsMock = vi.spyOn(getPatients, 'default').mockResolvedValue(PATIENT_DATA_MOCK);
+  const updatePatientMock = vi.spyOn(updatePatient, 'default').mockResolvedValue({ success: true });
+
+  render(<PatientManagement />);
+
+  // Test implementation...
+});
+```
+
+```typescript
+// mocks/PatientMocks.ts
+import { Patient, UpdatePatientParams } from '../domain/Patient';
+
+export const PATIENT_ID_MOCK = 'patient-123';
+export const PATIENT_DATA_MOCK: Patient[] = [
+  {
+    id: 'patient-1',
+    name: 'John Doe',
+    birthDate: '1990-01-01',
+    status: 'active'
+  },
+  {
+    id: 'patient-2',
+    name: 'Jane Smith',
+    birthDate: '1985-05-15',
+    status: 'inactive'
+  }
+];
+```
+
+### User Interaction Patterns
+
+**✅ CORRECT: Test user behavior, not implementation:**
+
+```typescript
+// Focus on user workflows and expected outcomes
+it('Should update patient status when user selects patients and clicks update', async () => {
+  const getPatientsMock = vi.spyOn(getPatients, 'default').mockResolvedValue(PATIENT_DATA_MOCK);
+  const updatePatientMock = vi.spyOn(updatePatient, 'default').mockResolvedValue({ success: true });
+
+  render(<PatientManagement />);
+
+  // Wait for data to load (integration behavior)
+  await waitForPatientsToLoad();
+
+  // User selects patients
+  await selectPatientsByIds(['patient-1', 'patient-2']);
+
+  // User performs action
+  await userEvent.click(screen.getByRole('button', { name: /update status/i }));
+
+  // Verify the port contract
+  expect(updatePatientMock).toHaveBeenCalledWith(
+    createPatientUpdate(PATIENT_DATA_MOCK, ['patient-1', 'patient-2'])
+  );
+
+  // Verify user sees the result
+  expect(screen.getByText(/patients updated successfully/i)).toBeInTheDocument();
+});
+```
+
+### Query Priority and Element Selection
+
+**Use React Testing Library query hierarchy:**
+
+1. **Semantic queries** (preferred):
+
+   ```typescript
+   screen.getByRole('button', { name: /save/i });
+   screen.getByLabelText(/patient name/i);
+   screen.getByText(/register patient/i);
+   ```
+
+2. **Accessibility queries**:
+
+   ```typescript
+   screen.getByAltText(/patient photo/i);
+   screen.getByTitle(/help information/i);
+   ```
+
+3. **Test IDs** (last resort only):
+   ```typescript
+   screen.getByTestId('patient-form-submit'); // Only when semantic queries aren't possible
+   ```
+
+### Visibility Assertions: .toBeVisible() vs .toBeInTheDocument()
+
+**Use `.toBeVisible()` for element presence - it's accessibility-first and checks that elements are truly visible and interactive to users:**
+
+```typescript
+// ✅ GOOD - Check element is present and accessible
+expect(screen.getByText(/success message/i)).toBeVisible();
+expect(screen.getByRole('button', { name: /submit/i })).toBeVisible();
+```
+
+**Use `.toBeInTheDocument()` only for element absence - it's faster for negative assertions:**
+
+```typescript
+// ✅ GOOD - Check element is absent
+expect(screen.queryByText(/error message/i)).not.toBeInTheDocument();
+expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+```
+
+**❌ Avoid using `.toBeInTheDocument()` for presence assertions - it doesn't verify accessibility:**
+
+```typescript
+// ❌ BAD - Doesn't check if element is actually visible to users
+expect(screen.getByText(/success message/i)).toBeInTheDocument();
+```
+
+### Error Handling and Edge Cases
+
+**Test error scenarios as users experience them:**
+
+```typescript
+it('Should display error message when patient registration fails', async () => {
+  const errorMessage = 'Patient already exists';
+  const registerPatientMock = vi.spyOn(registerPatient, 'default')
+    .mockRejectedValue(new ErrorService(errorMessage, ERROR_409));
+
+  render(<PatientRegistration />);
+
+  await userEvent.type(screen.getByLabelText(/patient name/i), 'John Doe');
+  await userEvent.click(screen.getByRole('button', { name: /register/i }));
+
+  // Verify user sees the error
+  expect(screen.getByText(errorMessage)).toBeInTheDocument();
+
+  // Verify form remains in editable state for retry
+  expect(screen.getByLabelText(/patient name/i)).toBeEnabled();
+});
+
+it('Should handle network errors gracefully', async () => {
+  const getPatientsMock = vi.spyOn(getPatients, 'default')
+    .mockRejectedValue(new ErrorService('Network Error', ERROR_500));
+
+  render(<PatientList />);
+
+  expect(screen.getByText(/something went wrong/i)).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
+});
+```
+
+## 🎭 Advanced Testing Patterns
+
+### Testing Form Workflows
+
+```typescript
+it('Should validate form fields and prevent submission when the user submit the form with invalid data ', async () => {
+  const registerPatientMock = vi.spyOn(registerPatient, 'default');
+
+  render(<PatientRegistration />);
+
+  // Submit empty form
+  await userEvent.click(screen.getByRole('button', { name: /register/i }));
+
+  // Verify validation messages appear
+  expect(screen.getByText(/patient name is required/i)).toBeInTheDocument();
+  expect(screen.getByText(/birth date is required/i)).toBeInTheDocument();
+
+  // Verify service was not called
+  expect(registerPatientMock).not.toHaveBeenCalled();
+});
+```
+
+### Testing Complex UI Interactions
+
+```typescript
+it('Should maintain selection state when user filters the patients list', async () => {
+  const getPatientsMock = vi.spyOn(getPatients, 'default').mockResolvedValue(PATIENT_DATA_MOCK);
+
+  render(<PatientManagement />);
+
+  await waitForPatientsToLoad();
+
+  // Select initial patients
+  await selectPatientsByIds(['patient-1']);
+  await expectPatientsToBeSelected(['patient-1']);
+
+  // Apply filter
+  await userEvent.type(screen.getByRole('textbox', { name: /filter/i }), 'Jane');
+
+  // Verify filtered results
+  expect(screen.getByText('Jane Smith')).toBeInTheDocument();
+  expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
+
+  // Clear filter and verify selection persists
+  await userEvent.click(screen.getByRole('button', { name: /clear filter/i }));
+  await expectPatientsToBeSelected(['patient-1']);
+});
+```
+
+### Testing State Management and Persistence
+
+```typescript
+it('Should reset form to initial state when user clicks reset', async () => {
+  const getPatientMock = vi.spyOn(getPatient, 'default').mockResolvedValue(PATIENT_DATA_MOCK[0]);
+  const updatePatientMock = vi.spyOn(updatePatient, 'default');
+
+  render(<PatientForm patientId={PATIENT_ID_MOCK} />);
+
+  await waitForPatientToLoad();
+
+  // Modify form data
+  await userEvent.clear(screen.getByLabelText(/patient name/i));
+  await userEvent.type(screen.getByLabelText(/patient name/i), 'Modified Name');
+
+  // Reset form
+  await userEvent.click(screen.getByRole('button', { name: /reset/i }));
+
+  // Verify form reverted to original values
+  expect(screen.getByDisplayValue('John Doe')).toBeInTheDocument();
+
+  // Verify reset button is disabled (no changes)
+  expect(screen.getByRole('button', { name: /reset/i })).toBeDisabled();
+});
+```
+
+## 🚨 Testing Anti-Patterns to Avoid
+
+### ❌ Don't Test Implementation Details
+
+```typescript
+// BAD: Testing internal state
+expect(wrapper.state('loading')).toBe(true);
+expect(component.find('.patient-card')).toHaveLength(2);
+
+// BAD: Testing internal methods
+expect(component.instance().handlePatientSelect).toHaveBeenCalled();
+
+// BAD: Testing CSS classes instead of functionality
+expect(wrapper.find('.error-message')).toExist();
+```
+
+### ❌ Don't Mock Internal Application Logic
+
+```typescript
+// BAD: Mocking internal hooks or components
+vi.mock('../hooks/usePatients');
+vi.mock('../components/PatientCard');
+
+// BAD: Mocking domain logic
+vi.mock('../domain/Patient');
+
+// BAD: Mocking data fetching libraries (SWR, React Query, etc.)
+vi.mock('swr', () => ({ mutate: vi.fn() }));
+vi.mock('@tanstack/react-query');
+vi.mock('react-query');
+```
+
+**🚫 Never Mock Data Fetching Libraries:**
+
+Data fetching libraries like SWR, React Query, or Apollo Client are implementation details. Mocking them tests HOW the component fetches data, not WHAT the user experiences.
+
+```typescript
+// ❌ BAD - Testing implementation details
+vi.mock('swr', () => ({ mutate: vi.fn() }));
+const mutateMock = vi.mocked(mutate);
+expect(mutateMock).toHaveBeenCalledWith('cache-key');
+
+// ✅ GOOD - Testing user behavior and business outcomes
+const saveBmiRecordMock = vi
+  .spyOn(saveBmiRecord, 'default')
+  .mockResolvedValue(BMI_RECORD_MOCK);
+expect(saveBmiRecordMock).toHaveBeenCalledWith({
+  weight: 75,
+  height: 170,
+  bmi: 26
+});
+expect(mockOnCalculate).toHaveBeenCalledWith(26);
+```
+
+**Why This Matters:**
+
+- Tests remain stable when switching between data fetching libraries
+- Focus on user outcomes, not internal mechanisms
+- True integration testing with real data fetching behavior
+- Better test maintainability and reliability
+
+**🚫 Never Mock Persistence Layers:**
+
+Persistence layers like localStorage, IndexedDB, or other storage mechanisms are implementation details that should not be mocked when testing at the port boundary. Since we mock service adapters (ports), the persistence layer is never called during tests.
+
+```typescript
+// ❌ BAD - Mocking persistence layers unnecessarily
+Object.defineProperty(window, 'localStorage', {
+  value: {
+    getItem: vi.fn(),
+    setItem: vi.fn(),
+    removeItem: vi.fn()
+  }
+});
+
+// ✅ GOOD - Mock only at the port boundary
+const saveBmiRecordMock = vi
+  .spyOn(saveBmiRecord, 'saveBmiRecord')
+  .mockResolvedValue(BMI_RECORD_MOCK);
+// localStorage methods are never called because we mock the service adapter
+```
+
+**Why This Matters:**
+
+- Service adapters abstract away the persistence implementation
+- Tests focus on business logic, not storage mechanisms
+- Persistence layers are tested through service adapter integration
+- Cleaner tests with fewer unnecessary mocks
+- Tests remain stable when switching storage implementations
+
+### ❌ Don't Test Too Many Things in One Test
+
+```typescript
+// BAD: Testing multiple unrelated behaviors
+it('Should handle all patient operations', async () => {
+  // Tests create, update, delete, filter, sort all in one test
+  // Makes debugging difficult and creates brittle tests
+});
+```
+
+## 📊 Test Utilities and Helpers
+
+### Create Reusable Test Utilities
+
+```typescript
+// src/test/PatientUtilities.ts
+export const waitForPatientsToLoad = () =>
+  waitFor(() => expect(screen.queryByText(/loading/i)).not.toBeInTheDocument());
+
+export const selectPatientsByIds = async (ids: string[]) => {
+  for (const id of ids) {
+    await userEvent.click(screen.getByTestId(`patient-checkbox-${id}`));
+  }
+};
+
+export const expectPatientsToBeSelected = async (ids: string[]) => {
+  await waitFor(() => {
+    ids.forEach((id) => {
+      expect(screen.getByTestId(`patient-checkbox-${id}`)).toBeChecked();
+    });
+  });
+};
+```
+
+**Use a shared render utility (e.g., `renderWithAppContext`) for rendering components with required providers (such as SWR or context providers). Place this utility in a common location (like `src/shared/test/setup.ts`) for reuse across tests.**
+
+### Required Test Setup
+
+```typescript
+import { screen, act, render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+// Import service modules for spying
+import * as getPatients from '../services/get-patients';
+import * as updatePatient from '../services/update-patient';
+import * as deletePatient from '../services/delete-patient';
+
+import {
+  PATIENT_DATA_MOCK,
+  PATIENT_ID_MOCK,
+  createPatientUpdate
+} from './mocks/PatientMocks';
+
+// If your Vitest config sets `restoreMocks: true`, you do NOT need to manually call `vi.restoreAllMocks()` or `vi.resetAllMocks()` in your test setup hooks. Vitest will handle this automatically between tests.
+
+beforeEach(() => {
+  // Only add custom setup here if needed; avoid redundant mock restores.
+});
+```
+
+## 🎯 Test Coverage Strategy
+
+### Focus on Business Value
+
+**High Priority (Full Coverage):**
+
+- Feature happy path
+- Critical business calculations
+
+**Medium Priority (Integration + Edge Cases):**
+
+- Search and filtering functionality
+- Form validation and user feedback
+- Data export and reporting features
+
+**Low Priority (Selective Testing):**
+
+- UI styling and layout components
+- Non-critical user preferences
+- Cosmetic features with low business impact
+
+### Coverage Metrics Guidelines
+
+- **Target 80%+ line coverage** but prioritize meaningful tests over coverage percentage
+- **Focus on path coverage** for critical business logic
+- **Ensure error path coverage** for all user-facing error scenarios
+- **Avoid coverage theater** - tests that increase numbers without adding confidence
+
+### Continuous Integration Considerations
+
+- **Tests must be deterministic** - no flaky tests due to timing or randomness
+- **Tests should be independent** - able to run in any order
+- **Use appropriate timeouts** for async operations
+- **Mock external dependencies** to avoid network calls in CI
+
+### Test Maintenance
+
+- **Update tests when requirements change**, not when implementation changes
+- **Remove obsolete tests** that no longer provide value
+- **Refactor test code** with the same care as production code
+
+Remember: **"Write tests. Not too many. Mostly integration."** Focus on tests that provide genuine confidence in user-facing functionality while remaining maintainable and resistant to unnecessary churn during refactoring.
