@@ -44,6 +44,8 @@ Para garantizar que tu código sea escalable y mantenible a largo plazo, es fund
 
 7. **Monolitos Modulares** 🏢 - Construye aplicaciones monolíticas mantenibles con límites de módulos bien definidos: [Arquitectura de Monolito Modular](https://www.milanjovanovic.tech/blog/what-is-a-modular-monolith)
 
+**🎯 Framework Personalizado de Arquitectura Limpia con Agentes de cógido** 🏛️ - Marco de trabajo estructurado y personalizado que he creado para implementar funcionalidades siguiendo principios de Arquitectura Limpia con desarrollo asistido por IA. Incluye flujos de trabajo sistemáticos, estándares técnicos y planes de ejecución automatizados: [Clean Architecture Prompts Framework](./Clean_Architecture_Prompts.md)
+
 ## 🧪 Estrategias de Testing
 
 Construye software confiable mediante estrategias de testing efectivas que maximicen la confianza mientras optimizan el tiempo de desarrollo:
