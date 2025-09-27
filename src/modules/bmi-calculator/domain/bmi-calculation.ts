@@ -1,22 +1,13 @@
 import { z } from "zod";
 import { ResultPattern } from "@/shared/domain/result-pattern";
+import { bmiBodyMeasurementsSchema } from "./bmi-body-measurements";
 
 export const bmiCalculationSchema = z.object({
   id: z.string({
     message: "ID is required",
   }),
-  weight: z
-    .number({
-      message: "Weight is required",
-    })
-    .min(1, "Weight must be at least 1 kg")
-    .max(1000, "Weight cannot exceed 1000 kg"),
-  height: z
-    .number({
-      message: "Height is required",
-    })
-    .min(30, "Height must be at least 30 cm")
-    .max(300, "Height cannot exceed 300 cm"),
+  weight: bmiBodyMeasurementsSchema.shape.weight,
+  height: bmiBodyMeasurementsSchema.shape.height,
   bmi: z.number({
     message: "BMI is required",
   }),
