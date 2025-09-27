@@ -33,7 +33,7 @@ Generate prompt sections using this template:
 Using as a base all of the already created layers (domain, hooks, services), create the component layer for the [feature-name].
 
 [Include visual guide reference if applicable]
-Use as a guide the attached image, and the forms-guide.mdc cursor rule.
+Use as a guide the attached image or figma link in in case it was provided, and the reference guides.
 
 ### Components Structure
 
@@ -138,22 +138,22 @@ Always end with clarification questions about:
 
 ## 🔍 Example Prompt Structure
 
-For a requirement like "Create BMI calculator interface with history display":
+For a requirement like "Create Books searcher":
 
 ```markdown
 .cursor/rules/architecture-guidelines.mdc => reference this cursor rule
 .cursor/rules/forms-guide.mdc => reference this cursor rule
-apps/ai-examples/src/bmi-calculator => reference this module folder
+apps/ai-examples/src/books-searcher => reference this module folder
 
-Using as a base all of the already created layers (domain, hooks, services), create the component layer for the BMI calculator.
+Using as a base all of the already created layers (domain, hooks, services), create the component layer for the Books searcher.
 
-Use as a guide the attached image, and the forms-guide.mdc cursor rule.
+Use as a guide the attached image or figma link in in case it was provided, and the reference guides.
 
 Components:
 
-1. The left side the image show a form with weight and height as inputs, and when clicking the calculate BMI the BMI record should be saved through the save bmi record service. Take into account to initialize the form fields with undefined values
+1. The left side shows a search form with inputs for title, author, genre, and publication year. When clicking the search button, the search should be executed through the book search service. Take into account to initialize the form fields with undefined values
 
-2. In the right side you have the BMI history where are loaded the previous BMI calculations, in each card are shown the BMI, the category (e.g: "obese") and the body measurements
+2. In the right side you have the search results where books matching the criteria are displayed, in each card are shown the book title, author, genre, publication year, and cover image. Include functionality to save books to favorites through the save favorite book service
 
 Make sure to use the system design components available at atoms-ui package.
 

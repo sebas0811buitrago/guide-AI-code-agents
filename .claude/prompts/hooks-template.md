@@ -98,7 +98,7 @@ Always end with clarification questions about:
 
 ## 🔍 Example Prompt Structure
 
-For a requirement like "Create hook to fetch user's BMI records":
+For a requirement like "Create hook to fetch user's Books records":
 
 ```markdown
 SWR guidelines : you will find code examples and guidelines here, TAKE A LOOK TO `.cursor/rules/swr-hook.mdc` before implementing anything
@@ -107,33 +107,25 @@ SWR guidelines : you will find code examples and guidelines here, TAKE A LOOK TO
 
 ### Hook Requirements
 
-- **Entity**: BMI Record collection
-- **Operation**: GET collection by user ID
+- **Entity**: Book
+- **Operation**: GET books by user ID
 - **Dependencies**: User ID (required)
 - **Caching Strategy**: Standard SWR with revalidation
 
 ### Implementation Specifications
 
-- Hook named `useGetBmiRecords` following convention
+- Hook named `useGetBooks` following convention
 - Accepts `userId` as required parameter
 - Uses conditional fetching when userId is present
 - Returns standard SWR response object
 
 <hook-signature>
-Create hook `useGetBmiRecords(userId: string)` that fetches BMI records for a specific user
+Create hook `useGetBooks(userId: string)` that fetches BMI records for a specific user
 </hook-signature>
 
 <swr-key>
-Use key "GET_ALL_BMI_RECORDS" with user ID parameter for cache differentiation
+Use key "GET_BOOKS_BY_USER_ID" with user ID parameter for cache differentiation
 </swr-key>
-
-<fetcher-integration>
-Integrate with service function that:
-- Accepts userId parameter
-- Fetches BMI records from API
-- Returns properly typed BMI record array
-- Handles API errors appropriately
-</fetcher-integration>
 
 <conditional-logic>
 Implement shouldFetch logic to only fetch when userId is provided and not null/undefined
@@ -141,10 +133,7 @@ Implement shouldFetch logic to only fetch when userId is provided and not null/u
 
 ## ❓ Clarification Questions
 
-- Should this hook support pagination or fetch all records at once?
-- Are there any filtering options needed (date range, status, etc.)?
-- Should the hook support real-time updates or standard caching?
-- What should happen if the user has no BMI records?
+[Generate specific questions about unclear requirements]
 ```
 
 ## 🔄 Hook Types Supported
@@ -183,3 +172,4 @@ Generated prompts should:
 - Include appropriate error handling guidance
 - Specify caching behavior clearly
 - Generate relevant clarification questions
+- Only create hooks for fetching data, not for deleting, creating or updating operations

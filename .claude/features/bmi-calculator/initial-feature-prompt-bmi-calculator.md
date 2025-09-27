@@ -1,1 +1,1 @@
-Create a BMI calculator with a form that calculates BMI, saves each calculation to local storage as history, and displays all previous calculations in a list.
+Create a BMI calculator with a form that calculates BMI, saves each calculation to local storage as history, and displays all previous calculations in a list. the records saved are only allowed to be viewed you cannot update them or delete them.

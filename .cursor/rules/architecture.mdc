@@ -211,7 +211,8 @@ export const getBook: GetBooksPort = async (search: string) => {
 
 #### 5. Error Handling with Result Pattern:
 
-- All exported service adapters should return a Result pattern to ensure consistent error handling across the app.
+- All exported service adapters should return a Result pattern to ensure consistent error handling across the app. This only applies to the adapters layer.
+
 - Use the following Result pattern type:
 
 ```typescript

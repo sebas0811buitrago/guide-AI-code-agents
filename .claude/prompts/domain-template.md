@@ -33,7 +33,7 @@ Create the whole module in the @/[module-name] module in the @/[app-name] app
 
 ### 2. Entity Definition Pattern
 
-For each entity identified in the requirement:
+For each entity identified in the requirement, try to find real concepts of the business problem and represent them as entities :
 
 ```
 <entity-name-entity>
@@ -54,7 +54,7 @@ For each entity identified in the requirement:
 ### 3. Closing
 
 ```
-Ask follow up questions if you are not sure of something, do not make guesses
+[Generate specific questions about unclear requirements]
 ```
 
 ## Entity Identification Guidelines
